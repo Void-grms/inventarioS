@@ -5,6 +5,15 @@
 <h1 class="page-title">{{ servicio.nombre|title }}</h1>
 <p class="page-sub">{{ servicio.total_verificados }} de {{ servicio.total_bienes }} verificados</p>
 
+<div class="chips">
+  {% for c in chips %}
+  <a class="chip chip--{{ c.clase }}{% if c.val == estado_sel %} chip--active{% endif %}"
+     href="?{% if c.val %}estado={{ c.val }}{% endif %}">
+    {{ c.lbl }} <span class="chip__n">{{ c.n }}</span>
+  </a>
+  {% endfor %}
+</div>
+
 <div class="list">
   {% for b in bienes %}
   <a class="card item" href="{% url 'bien_detalle' b.pk %}">
@@ -15,7 +24,7 @@
     {% estado_badge b.estado_verificacion %}
   </a>
   {% empty %}
-  <div class="empty">Este servicio no tiene bienes registrados.</div>
+  <div class="empty">{% if estado_sel %}No hay bienes con ese estado en este servicio.{% else %}Este servicio no tiene bienes registrados.{% endif %}</div>
   {% endfor %}
 </div>
 {% endblock %}

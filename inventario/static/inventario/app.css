@@ -225,6 +225,30 @@ a.card:hover { transform: translateY(-2px); box-shadow: var(--sh-2); }
 
 .empty { text-align: center; color: var(--muted); padding: var(--s6) var(--s4); }
 
+/* ---------- Chips de filtro ---------- */
+.chips { display: flex; gap: var(--s2); overflow-x: auto; padding-bottom: var(--s2); margin-bottom: var(--s4); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border-strong); background: var(--surface);
+  color: var(--text); border-radius: var(--r-full); padding: 7px 13px;
+  font-size: .84rem; font-weight: 700; white-space: nowrap;
+  transition: background .16s var(--ease), border-color .16s, color .16s;
+}
+.chip__n { font-size: .74rem; font-weight: 800; opacity: .6; }
+.chip:active { transform: translateY(1px); }
+.chip--active { background: var(--brand); border-color: var(--brand); color: #fff; }
+.chip--active .chip__n { opacity: .85; }
+/* punto de color por estado (cuando no está activo) */
+.chip--pendiente::before,.chip--conforme::before,.chip--faltante::before,
+.chip--cambiado::before,.chip--danado::before { content:""; width:8px; height:8px; border-radius:50%; }
+.chip--pendiente::before { background: var(--st-pendiente); }
+.chip--conforme::before  { background: var(--st-conforme); }
+.chip--faltante::before  { background: var(--st-faltante); }
+.chip--cambiado::before  { background: var(--st-cambiado); }
+.chip--danado::before    { background: var(--st-danado); }
+.chip--active::before { background: #fff !important; }
+
 /* ---------- Historial (timeline) ---------- */
 .timeline { display: flex; flex-direction: column; gap: var(--s2); }
 .tl-item { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: var(--r-md); padding: var(--s3) var(--s4); box-shadow: var(--sh-1); }

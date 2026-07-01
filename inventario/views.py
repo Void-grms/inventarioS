@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -7,6 +8,7 @@ from .exports import (bienes_por_responsable, bienes_por_servicio, exportar_exce
 from .forms import VerificacionForm
 from .importador import importar_inventario
 from .models import Bien, Servicio
+from .templatetags.inventario_extras import clase_estado
 
 
 @login_required
@@ -29,8 +31,24 @@ def avance(request):
 @login_required
 def servicio_detalle(request, pk):
     servicio = get_object_or_404(Servicio, pk=pk)
+    estado_sel = (request.GET.get("estado") or "").strip()
+
+    bienes = servicio.bienes.all()
+    if estado_sel:
+        bienes = bienes.filter(estado_verificacion=estado_sel)
+
+    # Conteos por estado para los chips de filtro.
+    conteos = {row["estado_verificacion"]: row["n"] for row in
+               servicio.bienes.values("estado_verificacion").annotate(n=Count("id"))}
+    total = servicio.total_bienes()
+    chips = [{"val": "", "lbl": "Todos", "clase": "todos", "n": total}]
+    for val, lbl in Bien.ESTADOS_VERIF:
+        chips.append({"val": val, "lbl": lbl,
+                      "clase": clase_estado(val), "n": conteos.get(val, 0)})
+
     return render(request, "inventario/servicio_detalle.html", {
-        "servicio": servicio, "bienes": servicio.bienes.all(),
+        "servicio": servicio, "bienes": bienes,
+        "chips": chips, "estado_sel": estado_sel,
     })
 
 

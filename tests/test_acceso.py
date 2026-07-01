@@ -40,6 +40,22 @@ def test_verificar_bien_por_post(client, usuario, bien):
     assert bien.responsable == "NUEVO"
 
 
+def test_filtro_por_estado_en_servicio(client, usuario, servicio):
+    from inventario.models import Bien
+    Bien.objects.create(codigo_patrimonial="C1", descripcion="silla conforme",
+                        servicio=servicio, estado="Bueno",
+                        estado_verificacion="CONFORME")
+    Bien.objects.create(codigo_patrimonial="F1", descripcion="mesa faltante",
+                        servicio=servicio, estado="Bueno",
+                        estado_verificacion="FALTANTE")
+    client.login(username="juan", password="secreto")
+    resp = client.get(f"/servicio/{servicio.id}/?estado=FALTANTE")
+    assert resp.status_code == 200
+    # los nombres se muestran en title-case por diseño
+    assert b"Mesa Faltante" in resp.content
+    assert b"Silla Conforme" not in resp.content
+
+
 def test_ficha_muestra_observacion_guardada(client, usuario, bien):
     client.login(username="juan", password="secreto")
     client.post(f"/bien/{bien.id}/", {
