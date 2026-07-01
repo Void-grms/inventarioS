@@ -70,6 +70,15 @@ class Foto(models.Model):
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     fecha = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        # Comprime la imagen recién subida antes de persistirla (una sola vez).
+        if self.imagen and not getattr(self, "_comprimida", False):
+            from .imagenes import comprimir_imagen
+            comprimido = comprimir_imagen(self.imagen)
+            self.imagen.save(comprimido.name, comprimido, save=False)
+            self._comprimida = True
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Foto de {self.bien.codigo_patrimonial}"
 

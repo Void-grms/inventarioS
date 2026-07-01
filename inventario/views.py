@@ -61,8 +61,10 @@ def bien_detalle(request, pk):
         form = VerificacionForm(instance=bien)
     responsables = list(Bien.objects.exclude(responsable="")
                         .values_list("responsable", flat=True).distinct())
+    registros = bien.registros.select_related("verificador")[:15]
     return render(request, "inventario/bien_detalle.html", {
         "bien": bien, "form": form, "responsables": responsables,
+        "registros": registros,
     })
 
 

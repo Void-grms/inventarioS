@@ -1,5 +1,5 @@
 {% extends "inventario/base.html" %}
-{% load inventario_extras %}
+{% load inventario_extras static %}
 {% block content %}
 <a class="btn btn--ghost" href="{% url 'servicio_detalle' bien.servicio_id %}" style="margin-bottom:var(--s4)">← {{ bien.servicio.nombre|title }}</a>
 
@@ -75,4 +75,21 @@
   {% for f in bien.fotos.all %}<a href="{{ f.imagen.url }}"><img src="{{ f.imagen.url }}" alt="Foto del bien"></a>{% endfor %}
 </div>
 {% endif %}
+
+{% if registros %}
+<div class="section-label">Historial</div>
+<div class="timeline">
+  {% for r in registros %}
+  <div class="tl-item">
+    <div class="tl-top">
+      {% estado_badge r.cambios|corta_resultado %}
+      <span class="tl-when">{{ r.fecha|date:"d/m/Y H:i" }}{% if r.verificador %} · {{ r.verificador.username }}{% endif %}</span>
+    </div>
+    {% if r.observacion %}<p class="tl-obs">{{ r.observacion }}</p>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<script src="{% static 'inventario/foto.js' %}" defer></script>
 {% endblock %}

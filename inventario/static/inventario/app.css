@@ -225,6 +225,13 @@ a.card:hover { transform: translateY(-2px); box-shadow: var(--sh-2); }
 
 .empty { text-align: center; color: var(--muted); padding: var(--s6) var(--s4); }
 
+/* ---------- Historial (timeline) ---------- */
+.timeline { display: flex; flex-direction: column; gap: var(--s2); }
+.tl-item { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--brand); border-radius: var(--r-md); padding: var(--s3) var(--s4); box-shadow: var(--sh-1); }
+.tl-top { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
+.tl-when { font-size: .78rem; color: var(--muted); }
+.tl-obs { margin: 6px 0 0; font-size: .92rem; color: var(--text); }
+
 /* motion respetuoso */
 .reveal { opacity: 0; transform: translateY(10px); animation: rise .5s var(--ease) forwards; }
 @keyframes rise { to { opacity: 1; transform: none; } }

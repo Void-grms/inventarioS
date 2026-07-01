@@ -38,3 +38,14 @@ def test_verificar_bien_por_post(client, usuario, bien):
     bien.refresh_from_db()
     assert bien.estado_verificacion == "CONFORME"
     assert bien.responsable == "NUEVO"
+
+
+def test_ficha_muestra_observacion_guardada(client, usuario, bien):
+    client.login(username="juan", password="secreto")
+    client.post(f"/bien/{bien.id}/", {
+        "responsable": "", "estado": "Bueno",
+        "servicio": bien.servicio_id, "accion": "CAMBIADO",
+        "observacion": "reubicado en almacen central"})
+    resp = client.get(f"/bien/{bien.id}/")
+    assert resp.status_code == 200
+    assert b"reubicado en almacen central" in resp.content

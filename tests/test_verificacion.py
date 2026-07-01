@@ -23,6 +23,7 @@ def test_form_guarda_y_marca_conforme(bien, usuario):
     assert bien.verificado_por == usuario
     assert bien.fecha_verificacion is not None
     assert bien.registros.count() == 1
+    assert bien.registros.first().observacion == "todo ok"
 
 
 def test_form_marca_faltante(bien, usuario):

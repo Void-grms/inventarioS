@@ -22,3 +22,16 @@ def estado_badge(valor):
 @register.filter
 def clase_estado(valor):
     return _MAP.get(valor, ("pendiente", ""))[0]
+
+
+_RESULTADOS = ("CONFORME", "FALTANTE", "CAMBIADO", "DAÑADO")
+
+
+@register.filter
+def corta_resultado(cambios):
+    """Extrae el resultado (CONFORME/FALTANTE/…) del texto de 'cambios' de un registro."""
+    texto = cambios or ""
+    for r in _RESULTADOS:
+        if r in texto:
+            return r
+    return "Pendiente"
