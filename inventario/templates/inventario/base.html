@@ -1,0 +1,33 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario Renacer Otuzco</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{% static 'inventario/app.css' %}" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-primary sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'avance' %}">📋 Inventario</a>
+    {% if user.is_authenticated %}
+    <div class="d-flex gap-2">
+      <a class="btn btn-sm btn-outline-light" href="{% url 'buscar' %}">🔍</a>
+      <form method="post" action="{% url 'logout' %}" class="m-0">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-outline-light">Salir</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</nav>
+<main class="container py-3">
+  {% if messages %}
+    {% for m in messages %}<div class="alert alert-info">{{ m }}</div>{% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

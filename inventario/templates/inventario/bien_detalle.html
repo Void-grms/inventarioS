@@ -1,0 +1,55 @@
+{% extends "inventario/base.html" %}
+{% block content %}
+<h1 class="h5">{{ bien.descripcion }}</h1>
+<p class="text-muted mb-3">{{ bien.codigo_patrimonial }}</p>
+<ul class="list-group mb-3">
+  <li class="list-group-item"><small class="text-muted">Marca/Modelo</small><br>{{ bien.marca }} {{ bien.modelo }}</li>
+  <li class="list-group-item"><small class="text-muted">Serie</small><br>{{ bien.nro_serie|default:"—" }}</li>
+  <li class="list-group-item"><small class="text-muted">Estado verificación</small><br>{{ bien.estado_verificacion }}</li>
+</ul>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label">Responsable</label>
+    <input name="responsable" list="responsables" value="{{ bien.responsable }}" class="form-control">
+    <datalist id="responsables">
+      {% for r in responsables %}<option value="{{ r }}">{% endfor %}
+    </datalist>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Estado</label>
+    <select name="estado" class="form-select">
+      {% for val, txt in form.fields.estado.choices %}
+      <option value="{{ val }}" {% if bien.estado == val %}selected{% endif %}>{{ txt }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Servicio / Ubicación</label>
+    <select name="servicio" class="form-select">
+      {% for s in form.fields.servicio.queryset %}
+      <option value="{{ s.pk }}" {% if bien.servicio_id == s.pk %}selected{% endif %}>{{ s.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Foto</label>
+    <input type="file" name="fotos" accept="image/*" capture="environment" class="form-control" multiple>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Observación</label>
+    <textarea name="observacion" class="form-control" rows="2"></textarea>
+  </div>
+  <div class="d-grid gap-2">
+    <button name="accion" value="verificar" class="btn btn-success">✅ Guardar verificación</button>
+    <button name="accion" value="faltante" class="btn btn-outline-danger">❌ Marcar como faltante</button>
+  </div>
+</form>
+
+{% if bien.fotos.all %}
+<div class="mt-3 row g-2">
+  {% for f in bien.fotos.all %}<div class="col-4"><img src="{{ f.imagen.url }}" class="img-fluid rounded"></div>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

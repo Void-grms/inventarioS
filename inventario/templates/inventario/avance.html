@@ -1,0 +1,28 @@
+{% extends "inventario/base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Avance de verificación</h1>
+<div class="row g-2 mb-3">
+  <div class="col-4"><div class="card text-center"><div class="card-body p-2">
+    <div class="h4 m-0">{{ total }}</div><small>Total</small></div></div></div>
+  <div class="col-4"><div class="card text-center text-success"><div class="card-body p-2">
+    <div class="h4 m-0">{{ verificados }}</div><small>Verificados</small></div></div></div>
+  <div class="col-4"><div class="card text-center text-danger"><div class="card-body p-2">
+    <div class="h4 m-0">{{ faltantes }}</div><small>Faltantes</small></div></div></div>
+</div>
+<form action="{% url 'buscar' %}" class="mb-3">
+  <input name="q" class="form-control" placeholder="Buscar código o descripción...">
+</form>
+<div class="d-flex gap-2 mb-3">
+  <a class="btn btn-sm btn-outline-secondary" href="{% url 'reporte_servicio' %}">Reporte servicio</a>
+  <a class="btn btn-sm btn-outline-secondary" href="{% url 'reporte_responsable' %}">Reporte responsable</a>
+  <a class="btn btn-sm btn-success" href="{% url 'exportar' %}">⬇ Excel</a>
+</div>
+<div class="list-group">
+  {% for t in tarjetas %}
+  <a href="{% url 'servicio_detalle' t.obj.pk %}" class="list-group-item d-flex justify-content-between align-items-center">
+    <span>{{ t.obj.nombre }}</span>
+    <span class="badge bg-primary rounded-pill">{{ t.verificados }}/{{ t.total }}</span>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

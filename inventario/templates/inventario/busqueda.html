@@ -1,0 +1,16 @@
+{% extends "inventario/base.html" %}
+{% block content %}
+<form class="mb-3">
+  <input name="q" value="{{ q }}" class="form-control" placeholder="Buscar código o descripción..." autofocus>
+</form>
+<div class="list-group">
+  {% for b in resultados %}
+  <a href="{% url 'bien_detalle' b.pk %}" class="list-group-item">
+    <strong>{{ b.descripcion }}</strong><br>
+    <small class="text-muted">{{ b.codigo_patrimonial }} · {{ b.servicio.nombre }}</small>
+  </a>
+  {% empty %}
+  {% if q %}<p class="text-muted">Sin resultados para "{{ q }}".</p>{% endif %}
+  {% endfor %}
+</div>
+{% endblock %}

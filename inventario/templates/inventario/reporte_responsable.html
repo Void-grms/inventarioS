@@ -1,0 +1,18 @@
+{% extends "inventario/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h1 class="h5">Reporte por responsable</h1>
+  <a class="btn btn-sm btn-success" href="{% url 'exportar' %}">⬇ Excel</a>
+</div>
+{% for g in grupos %}
+<h2 class="h6 mt-3">{{ g.responsable }}</h2>
+<table class="table table-sm">
+  <thead><tr><th>Código</th><th>Descripción</th><th>Servicio</th></tr></thead>
+  <tbody>
+    {% for b in g.bienes %}
+    <tr><td>{{ b.codigo_patrimonial }}</td><td>{{ b.descripcion }}</td><td>{{ b.servicio.nombre }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endfor %}
+{% endblock %}

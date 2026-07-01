@@ -1,0 +1,19 @@
+{% extends "inventario/base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">{{ servicio.nombre }}</h1>
+<div class="list-group">
+  {% for b in bienes %}
+  <a href="{% url 'bien_detalle' b.pk %}" class="list-group-item">
+    <div class="d-flex justify-content-between">
+      <strong>{{ b.descripcion }}</strong>
+      <span>
+        {% if b.estado_verificacion == "Verificado" %}✅
+        {% elif b.estado_verificacion == "Faltante" %}❌
+        {% else %}⏳{% endif %}
+      </span>
+    </div>
+    <small class="text-muted">{{ b.codigo_patrimonial }} · {{ b.responsable|default:"sin responsable" }}</small>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}
