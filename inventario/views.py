@@ -1,9 +1,11 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .exports import (bienes_por_responsable, bienes_por_servicio, exportar_excel)
 from .forms import VerificacionForm
+from .importador import importar_inventario
 from .models import Bien, Servicio
 
 
@@ -74,6 +76,26 @@ def reporte_servicio(request):
 def reporte_responsable(request):
     return render(request, "inventario/reporte_responsable.html",
                 {"grupos": bienes_por_responsable()})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def importar(request):
+    if request.method == "POST":
+        archivo = request.FILES.get("archivo")
+        if not archivo:
+            messages.error(request, "Selecciona un archivo Excel (.xlsx).")
+        else:
+            try:
+                creados, actualizados = importar_inventario(archivo)
+                messages.success(
+                    request,
+                    f"Importación completa: {creados} nuevos, "
+                    f"{actualizados} actualizados.")
+                return redirect("avance")
+            except Exception as exc:  # noqa: BLE001
+                messages.error(request, f"No se pudo leer el archivo: {exc}")
+    return render(request, "inventario/importar.html", {})
 
 
 @login_required
