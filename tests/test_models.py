@@ -15,7 +15,7 @@ def test_servicio_progreso(db, servicio):
     from inventario.models import Bien
     Bien.objects.create(codigo_patrimonial="A1", descripcion="x",
                         servicio=servicio, estado="Bueno",
-                        estado_verificacion="Verificado")
+                        estado_verificacion="CONFORME")
     Bien.objects.create(codigo_patrimonial="A2", descripcion="y",
                         servicio=servicio, estado="Bueno")
     assert servicio.total_bienes() == 2

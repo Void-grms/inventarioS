@@ -1,19 +1,21 @@
 {% extends "inventario/base.html" %}
+{% load inventario_extras %}
 {% block content %}
-<h1 class="h5 mb-3">{{ servicio.nombre }}</h1>
-<div class="list-group">
+<a class="btn btn--ghost" href="{% url 'avance' %}" style="margin-bottom:var(--s4)">← Servicios</a>
+<h1 class="page-title">{{ servicio.nombre|title }}</h1>
+<p class="page-sub">{{ servicio.total_verificados }} de {{ servicio.total_bienes }} verificados</p>
+
+<div class="list">
   {% for b in bienes %}
-  <a href="{% url 'bien_detalle' b.pk %}" class="list-group-item">
-    <div class="d-flex justify-content-between">
-      <strong>{{ b.descripcion }}</strong>
-      <span>
-        {% if b.estado_verificacion == "Verificado" %}✅
-        {% elif b.estado_verificacion == "Faltante" %}❌
-        {% else %}⏳{% endif %}
-      </span>
+  <a class="card item" href="{% url 'bien_detalle' b.pk %}">
+    <div class="item__body">
+      <div class="item__title">{{ b.descripcion|title }}</div>
+      <div class="item__meta">{{ b.codigo_patrimonial }} · {{ b.responsable|default:"sin responsable"|title }}</div>
     </div>
-    <small class="text-muted">{{ b.codigo_patrimonial }} · {{ b.responsable|default:"sin responsable" }}</small>
+    {% estado_badge b.estado_verificacion %}
   </a>
+  {% empty %}
+  <div class="empty">Este servicio no tiene bienes registrados.</div>
   {% endfor %}
 </div>
 {% endblock %}

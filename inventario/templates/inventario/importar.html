@@ -1,19 +1,19 @@
 {% extends "inventario/base.html" %}
 {% block content %}
-<h1 class="h5 mb-3">Importar inventario desde Excel</h1>
-<p class="text-muted">
-  Sube el archivo <code>.xlsx</code> del inventario. Los bienes se cargan por su
-  <strong>código patrimonial</strong>: los nuevos se crean y los existentes se
-  actualizan (no se duplican). Las verificaciones ya hechas no se pierden.
+<a class="btn btn--ghost" href="{% url 'avance' %}" style="margin-bottom:var(--s4)">← Volver</a>
+<h1 class="page-title">Importar inventario</h1>
+<p class="page-sub">
+  Sube el archivo <strong>.xlsx</strong> del inventario. Los bienes se cargan por su
+  código patrimonial: los nuevos se crean y los existentes se actualizan (no se duplican).
+  Las verificaciones ya hechas no se pierden.
 </p>
-<form method="post" enctype="multipart/form-data">
+
+<form method="post" enctype="multipart/form-data" class="card">
   {% csrf_token %}
-  <div class="mb-3">
-    <label class="form-label">Archivo Excel</label>
-    <input type="file" name="archivo" accept=".xlsx" class="form-control" required>
+  <div class="field">
+    <label>Archivo Excel</label>
+    <input type="file" name="archivo" accept=".xlsx" class="file" required>
   </div>
-  <div class="d-grid">
-    <button class="btn btn-primary">⬆ Importar</button>
-  </div>
+  <button class="btn btn--primary btn--block">⬆ Importar</button>
 </form>
 {% endblock %}

@@ -17,7 +17,8 @@ def test_avance_logueado_ok(client, usuario, bien):
     client.login(username="juan", password="secreto")
     resp = client.get("/")
     assert resp.status_code == 200
-    assert b"FARMACIA" in resp.content
+    # el nombre se muestra en title-case (Farmacia) por diseño
+    assert b"Farmacia" in resp.content
 
 
 def test_busqueda_por_codigo(client, usuario, bien):
@@ -31,9 +32,9 @@ def test_verificar_bien_por_post(client, usuario, bien):
     client.login(username="juan", password="secreto")
     resp = client.post(f"/bien/{bien.id}/", {
         "responsable": "NUEVO", "estado": "Bueno",
-        "servicio": bien.servicio_id, "accion": "verificar",
+        "servicio": bien.servicio_id, "accion": "CONFORME",
         "observacion": "ok"})
     assert resp.status_code == 302
     bien.refresh_from_db()
-    assert bien.estado_verificacion == "Verificado"
+    assert bien.estado_verificacion == "CONFORME"
     assert bien.responsable == "NUEVO"

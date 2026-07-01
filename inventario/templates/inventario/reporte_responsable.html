@@ -1,18 +1,27 @@
 {% extends "inventario/base.html" %}
+{% load inventario_extras %}
 {% block content %}
-<div class="d-flex justify-content-between mb-3">
-  <h1 class="h5">Reporte por responsable</h1>
-  <a class="btn btn-sm btn-success" href="{% url 'exportar' %}">⬇ Excel</a>
+<div style="display:flex; align-items:center; justify-content:space-between; gap:var(--s3); margin-bottom:var(--s4);">
+  <h1 class="page-title" style="margin:0;">Por responsable</h1>
+  <a class="btn" href="{% url 'exportar' %}">⬇ Excel</a>
 </div>
+
 {% for g in grupos %}
-<h2 class="h6 mt-3">{{ g.responsable }}</h2>
-<table class="table table-sm">
-  <thead><tr><th>Código</th><th>Descripción</th><th>Servicio</th></tr></thead>
-  <tbody>
-    {% for b in g.bienes %}
-    <tr><td>{{ b.codigo_patrimonial }}</td><td>{{ b.descripcion }}</td><td>{{ b.servicio.nombre }}</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="report-group">
+  <h2>{{ g.responsable|title }}</h2>
+  <table class="table">
+    <thead><tr><th>Código</th><th>Descripción</th><th>Servicio</th><th>Estado</th></tr></thead>
+    <tbody>
+      {% for b in g.bienes %}
+      <tr>
+        <td>{{ b.codigo_patrimonial }}</td>
+        <td>{{ b.descripcion|title }}</td>
+        <td>{{ b.servicio.nombre|title }}</td>
+        <td>{% estado_badge b.estado_verificacion %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endfor %}
 {% endblock %}

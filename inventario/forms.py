@@ -12,10 +12,13 @@ class VerificacionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 'accion' y 'observacion' no son campos del modelo; se leen de data
-        self.accion = (self.data.get("accion") or "verificar").strip()
+        self.accion = (self.data.get("accion") or "").strip().upper()
         self.observacion = (self.data.get("observacion") or "").strip()
 
     def guardar(self, usuario):
+        # Solo un resultado válido dispara la verificación.
+        if self.accion not in Bien.RESULTADOS:
+            return None
         bien = self.save(commit=False)
         cambios = []
         if "responsable" in self.changed_data:
@@ -24,11 +27,8 @@ class VerificacionForm(ModelForm):
             cambios.append("estado")
         if "servicio" in self.changed_data:
             cambios.append("ubicacion")
-        if self.accion == "faltante":
-            bien.estado_verificacion = "Faltante"
-            cambios.append("faltante")
-        else:
-            bien.estado_verificacion = "Verificado"
+        cambios.append(self.accion)
+        bien.estado_verificacion = self.accion
         bien.fecha_verificacion = timezone.now()
         bien.verificado_por = usuario
         bien.save()

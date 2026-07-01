@@ -15,15 +15,23 @@ class Servicio(models.Model):
         return self.bienes.count()
 
     def total_verificados(self):
-        return self.bienes.filter(estado_verificacion="Verificado").count()
+        return self.bienes.exclude(estado_verificacion="Pendiente").count()
 
     def total_faltantes(self):
-        return self.bienes.filter(estado_verificacion="Faltante").count()
+        return self.bienes.filter(estado_verificacion="FALTANTE").count()
 
 
 class Bien(models.Model):
     ESTADOS = [(e, e) for e in ("Bueno", "Regular", "Malo", "Nuevo")]
-    ESTADOS_VERIF = [(e, e) for e in ("Pendiente", "Verificado", "Faltante")]
+    # Estado de verificación: 'Pendiente' (aún no revisado) + 4 resultados posibles.
+    RESULTADOS = ("CONFORME", "FALTANTE", "CAMBIADO", "DAÑADO")
+    ESTADOS_VERIF = [
+        ("Pendiente", "Pendiente"),
+        ("CONFORME", "Conforme"),
+        ("FALTANTE", "Faltante"),
+        ("CAMBIADO", "Cambiado"),
+        ("DAÑADO", "Dañado"),
+    ]
 
     codigo_patrimonial = models.CharField(max_length=30, unique=True, db_index=True)
     descripcion = models.CharField(max_length=300)

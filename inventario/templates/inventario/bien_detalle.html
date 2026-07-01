@@ -1,55 +1,78 @@
 {% extends "inventario/base.html" %}
+{% load inventario_extras %}
 {% block content %}
-<h1 class="h5">{{ bien.descripcion }}</h1>
-<p class="text-muted mb-3">{{ bien.codigo_patrimonial }}</p>
-<ul class="list-group mb-3">
-  <li class="list-group-item"><small class="text-muted">Marca/Modelo</small><br>{{ bien.marca }} {{ bien.modelo }}</li>
-  <li class="list-group-item"><small class="text-muted">Serie</small><br>{{ bien.nro_serie|default:"—" }}</li>
-  <li class="list-group-item"><small class="text-muted">Estado verificación</small><br>{{ bien.estado_verificacion }}</li>
-</ul>
+<a class="btn btn--ghost" href="{% url 'servicio_detalle' bien.servicio_id %}" style="margin-bottom:var(--s4)">← {{ bien.servicio.nombre|title }}</a>
+
+<div class="detail-head reveal">
+  <h1>{{ bien.descripcion|title }}</h1>
+  <div style="display:flex; align-items:center; gap:var(--s3); flex-wrap:wrap;">
+    <span class="detail-code">{{ bien.codigo_patrimonial }}</span>
+    {% estado_badge bien.estado_verificacion %}
+  </div>
+</div>
+
+<dl class="facts">
+  <div class="fact"><dt>Marca</dt><dd>{{ bien.marca|default:"—" }}</dd></div>
+  <div class="fact"><dt>Modelo</dt><dd>{{ bien.modelo|default:"—" }}</dd></div>
+  <div class="fact"><dt>N.º Serie</dt><dd>{{ bien.nro_serie|default:"—" }}</dd></div>
+  <div class="fact"><dt>Color</dt><dd>{{ bien.color|default:"—" }}</dd></div>
+  {% if bien.fecha_verificacion %}
+  <div class="fact fact--full"><dt>Última verificación</dt><dd>{{ bien.fecha_verificacion|date:"d/m/Y H:i" }} · {{ bien.verificado_por.username|default:"—" }}</dd></div>
+  {% endif %}
+</dl>
 
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  <div class="mb-3">
-    <label class="form-label">Responsable</label>
-    <input name="responsable" list="responsables" value="{{ bien.responsable }}" class="form-control">
+
+  <div class="field">
+    <label>Responsable</label>
+    <input name="responsable" list="responsables" value="{{ bien.responsable }}" class="input" placeholder="Nombre del responsable">
     <datalist id="responsables">
       {% for r in responsables %}<option value="{{ r }}">{% endfor %}
     </datalist>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Estado</label>
-    <select name="estado" class="form-select">
+
+  <div class="field">
+    <label>Estado físico</label>
+    <select name="estado" class="select">
       {% for val, txt in form.fields.estado.choices %}
       <option value="{{ val }}" {% if bien.estado == val %}selected{% endif %}>{{ txt }}</option>
       {% endfor %}
     </select>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Servicio / Ubicación</label>
-    <select name="servicio" class="form-select">
+
+  <div class="field">
+    <label>Servicio / Ubicación</label>
+    <select name="servicio" class="select">
       {% for s in form.fields.servicio.queryset %}
-      <option value="{{ s.pk }}" {% if bien.servicio_id == s.pk %}selected{% endif %}>{{ s.nombre }}</option>
+      <option value="{{ s.pk }}" {% if bien.servicio_id == s.pk %}selected{% endif %}>{{ s.nombre|title }}</option>
       {% endfor %}
     </select>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Foto</label>
-    <input type="file" name="fotos" accept="image/*" capture="environment" class="form-control" multiple>
+
+  <div class="field">
+    <label>Foto</label>
+    <input type="file" name="fotos" accept="image/*" capture="environment" class="file" multiple>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Observación</label>
-    <textarea name="observacion" class="form-control" rows="2"></textarea>
+
+  <div class="field">
+    <label>Observación</label>
+    <textarea name="observacion" class="textarea" rows="2" placeholder="Notas del hallazgo (opcional)"></textarea>
   </div>
-  <div class="d-grid gap-2">
-    <button name="accion" value="verificar" class="btn btn-success">✅ Guardar verificación</button>
-    <button name="accion" value="faltante" class="btn btn-outline-danger">❌ Marcar como faltante</button>
+
+  <div class="section-label">Resultado de la verificación</div>
+  <div class="verdicts">
+    <button class="verdict verdict--conforme" name="accion" value="CONFORME"><span class="ico">✓</span> Conforme</button>
+    <button class="verdict verdict--faltante" name="accion" value="FALTANTE"><span class="ico">✕</span> Faltante</button>
+    <button class="verdict verdict--cambiado" name="accion" value="CAMBIADO"><span class="ico">⇄</span> Cambiado</button>
+    <button class="verdict verdict--danado" name="accion" value="DAÑADO"><span class="ico">⚠</span> Dañado</button>
   </div>
 </form>
 
 {% if bien.fotos.all %}
-<div class="mt-3 row g-2">
-  {% for f in bien.fotos.all %}<div class="col-4"><img src="{{ f.imagen.url }}" class="img-fluid rounded"></div>{% endfor %}
+<div class="section-label">Fotos</div>
+<div class="gallery">
+  {% for f in bien.fotos.all %}<a href="{{ f.imagen.url }}"><img src="{{ f.imagen.url }}" alt="Foto del bien"></a>{% endfor %}
 </div>
 {% endif %}
 {% endblock %}

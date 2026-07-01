@@ -1,30 +1,42 @@
 {% extends "inventario/base.html" %}
 {% block content %}
-<h1 class="h5 mb-3">Avance de verificación</h1>
-<div class="row g-2 mb-3">
-  <div class="col-4"><div class="card text-center"><div class="card-body p-2">
-    <div class="h4 m-0">{{ total }}</div><small>Total</small></div></div></div>
-  <div class="col-4"><div class="card text-center text-success"><div class="card-body p-2">
-    <div class="h4 m-0">{{ verificados }}</div><small>Verificados</small></div></div></div>
-  <div class="col-4"><div class="card text-center text-danger"><div class="card-body p-2">
-    <div class="h4 m-0">{{ faltantes }}</div><small>Faltantes</small></div></div></div>
+<h1 class="page-title">Avance de verificación</h1>
+<p class="page-sub">Recorre cada servicio y registra el resultado de cada bien.</p>
+
+<div class="kpis reveal">
+  <div class="kpi"><div class="kpi__num">{{ total }}</div><div class="kpi__lbl">Total</div></div>
+  <div class="kpi kpi--ok"><div class="kpi__num">{{ verificados }}</div><div class="kpi__lbl">Verificados</div></div>
+  <div class="kpi kpi--warn"><div class="kpi__num">{{ faltantes }}</div><div class="kpi__lbl">Faltantes</div></div>
 </div>
-<form action="{% url 'buscar' %}" class="mb-3">
-  <input name="q" class="form-control" placeholder="Buscar código o descripción...">
+
+{% if total %}
+<div class="progress"><span style="width: {% widthratio verificados total 100 %}%"></span></div>
+{% endif %}
+
+<form class="search" action="{% url 'buscar' %}">
+  <input name="q" placeholder="Buscar por código o descripción…" inputmode="search">
 </form>
-<div class="d-flex gap-2 mb-3">
-  <a class="btn btn-sm btn-outline-secondary" href="{% url 'reporte_servicio' %}">Reporte servicio</a>
-  <a class="btn btn-sm btn-outline-secondary" href="{% url 'reporte_responsable' %}">Reporte responsable</a>
-  <a class="btn btn-sm btn-success" href="{% url 'exportar' %}">⬇ Excel</a>
-  {% if user.is_staff %}
-  <a class="btn btn-sm btn-outline-primary" href="{% url 'importar' %}">⬆ Importar Excel</a>
-  {% endif %}
+
+<div class="toolbar">
+  <a class="btn btn--ghost" href="{% url 'reporte_servicio' %}">📄 Por servicio</a>
+  <a class="btn btn--ghost" href="{% url 'reporte_responsable' %}">👤 Por responsable</a>
+  <a class="btn" href="{% url 'exportar' %}">⬇ Excel</a>
+  {% if user.is_staff %}<a class="btn btn--primary" href="{% url 'importar' %}">⬆ Importar</a>{% endif %}
 </div>
-<div class="list-group">
+
+<div class="list">
   {% for t in tarjetas %}
-  <a href="{% url 'servicio_detalle' t.obj.pk %}" class="list-group-item d-flex justify-content-between align-items-center">
-    <span>{{ t.obj.nombre }}</span>
-    <span class="badge bg-primary rounded-pill">{{ t.verificados }}/{{ t.total }}</span>
+  <a class="card srv" href="{% url 'servicio_detalle' t.obj.pk %}">
+    <div>
+      <div class="srv__name">{{ t.obj.nombre|title }}</div>
+      <div class="srv__meta">
+        {{ t.verificados }} de {{ t.total }} verificados{% if t.faltantes %} · {{ t.faltantes }} faltante{{ t.faltantes|pluralize }}{% endif %}
+      </div>
+    </div>
+    <div class="srv__ring" style="border-radius:50%; background: conic-gradient(var(--brand) {% widthratio t.verificados t.total 100 %}%, #dde6ec 0);">
+      <span style="position:absolute; inset:5px; border-radius:50%; background:var(--surface);"></span>
+      <b>{{ t.verificados }}/{{ t.total }}</b>
+    </div>
   </a>
   {% endfor %}
 </div>

@@ -18,8 +18,8 @@ def avance(request):
         "faltantes": s.total_faltantes(),
     } for s in servicios]
     total = Bien.objects.count()
-    verificados = Bien.objects.filter(estado_verificacion="Verificado").count()
-    faltantes = Bien.objects.filter(estado_verificacion="Faltante").count()
+    verificados = Bien.objects.exclude(estado_verificacion="Pendiente").count()
+    faltantes = Bien.objects.filter(estado_verificacion="FALTANTE").count()
     return render(request, "inventario/avance.html", {
         "tarjetas": tarjetas, "total": total,
         "verificados": verificados, "faltantes": faltantes,

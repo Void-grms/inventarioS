@@ -1,16 +1,23 @@
 {% extends "inventario/base.html" %}
+{% load inventario_extras %}
 {% block content %}
-<form class="mb-3">
-  <input name="q" value="{{ q }}" class="form-control" placeholder="Buscar código o descripción..." autofocus>
+<h1 class="page-title">Buscar bien</h1>
+<form class="search" style="margin-top:var(--s3)">
+  <input name="q" value="{{ q }}" placeholder="Código patrimonial o descripción…" autofocus inputmode="search">
 </form>
-<div class="list-group">
+
+<div class="list">
   {% for b in resultados %}
-  <a href="{% url 'bien_detalle' b.pk %}" class="list-group-item">
-    <strong>{{ b.descripcion }}</strong><br>
-    <small class="text-muted">{{ b.codigo_patrimonial }} · {{ b.servicio.nombre }}</small>
+  <a class="card item" href="{% url 'bien_detalle' b.pk %}">
+    <div class="item__body">
+      <div class="item__title">{{ b.descripcion|title }}</div>
+      <div class="item__meta">{{ b.codigo_patrimonial }} · {{ b.servicio.nombre|title }}</div>
+    </div>
+    {% estado_badge b.estado_verificacion %}
   </a>
   {% empty %}
-  {% if q %}<p class="text-muted">Sin resultados para "{{ q }}".</p>{% endif %}
+  {% if q %}<div class="empty">Sin resultados para “{{ q }}”.</div>
+  {% else %}<div class="empty">Escribe un código o descripción para buscar.</div>{% endif %}
   {% endfor %}
 </div>
 {% endblock %}
